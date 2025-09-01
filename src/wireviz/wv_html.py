@@ -68,8 +68,16 @@ def generate_html_output(filename: Union[str, Path], bom_list: List[List[str]], 
         html = html.replace(f'"sheetsize_default"', '"{}"'.format(metadata.get('template',{}).get('sheetsize', ''))) # include quotes so no replacement happens within <style> definition
 
         # TODO: handle multi-page documents
-        html = html.replace('<!-- %sheet_current% -->', '1')
-        html = html.replace('<!-- %sheet_total% -->', '1')
+        if "template" in metadata.keys():
+            sheet_current = metadata["template"].get("sheet_current", "1")
+            sheet_total = metadata["template"].get("sheet_total", "1")
+            sheet_size = metadata["template"].get("sheetsize", "")
+            html = html.replace('<!-- %sheet_current% -->', str(sheet_current))
+            html = html.replace('<!-- %sheet_total% -->', str(sheet_total))
+            html = html.replace('<!-- %sheetsize% -->', str(sheet_size))
+        else:
+            html = html.replace('<!-- %sheet_current% -->', '1')
+            html = html.replace('<!-- %sheet_total% -->', '1')
 
         # fill out other generic metadata
         for item, contents in metadata.items():
